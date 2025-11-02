@@ -44,9 +44,24 @@ class _PrevisionInterfaceState extends State<PrevisionInterface> {
           _donneesMeteo = data;
           _isLoading = false;
         });
-      } else {
+      } else if(response.statusCode == 400) {
         setState(() => _isLoading = false);
-        String message = 'Erreur ${response.statusCode}';
+        String message = 'Requete invalide : vérifiez le nom de la ville.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      } else if(response.statusCode == 401) {
+        setState(() => _isLoading = false);
+        String message = 'Clé API invalide ou expirée.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      } else  {
+        setState(() => _isLoading = false);
+        String message = "Erreur inconnue (${response.statusCode}).";
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erreur inconnue.")),
+        );
         try {
           final Map<String, dynamic> err = jsonDecode(response.body);
           if (err.containsKey('message')) message = err['message'];
